@@ -1,13 +1,4 @@
-import {
-  startOfMonth,
-  endOfMonth,
-  eachDayOfInterval,
-  startOfWeek,
-  endOfWeek,
-  format,
-  isSameMonth,
-  isSameDay,
-} from "date-fns"
+import { startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, format, isSameDay } from "date-fns"
 import type { Locale } from "date-fns"
 
 /**
@@ -58,28 +49,6 @@ export function generateCalendarDays(currentDate: Date) {
 
   // 전체 캘린더 그리드 날짜
   return [...prevMonthDays, ...monthDays, ...nextMonthDays]
-}
-
-/**
- * 날짜에 대한 CSS 클래스를 계산합니다.
- */
-export function getDateClasses(day: Date, currentDate: Date, isToday: boolean, activityIntensityClass: string) {
-  const isCurrentMonth = isSameMonth(day, currentDate)
-
-  return {
-    cell: `
-      min-h-[60px] cursor-pointer rounded-md border p-1 transition-colors md:min-h-[100px] md:p-2
-      ${isCurrentMonth ? activityIntensityClass : "opacity-40 bg-gray-50"}
-      ${isToday ? "border-primary border-2" : ""}
-      hover:border-primary
-    `,
-    date: `
-      text-xs md:text-sm
-      ${day.getDay() === 0 ? "text-red-500" : ""}
-      ${day.getDay() === 6 ? "text-blue-500" : ""}
-      ${isToday ? "font-bold text-primary" : ""}
-    `,
-  }
 }
 
 /**

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { ko } from "date-fns/locale"
+import { isSameMonth } from "date-fns"
 import { MainLayout } from "@/components/layout/main-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -13,13 +14,7 @@ import { Label } from "@/components/ui/label"
 import { useMobile } from "@/hooks/use-mobile"
 import { useCalendarEvents } from "@/hooks/useCalendarEvents"
 import { useActivityFilters } from "@/hooks/useActivityFilters"
-import {
-  generateCalendarDays,
-  getDateClasses,
-  getActivityIntensityClass,
-  isToday,
-  formatMonthTitle,
-} from "@/lib/utils/calendar-utils"
+import { generateCalendarDays, getActivityIntensityClass, isToday, formatMonthTitle } from "@/lib/utils/calendar-utils"
 
 // 모든 활동 유형 목록 (수면과 여가 제외)
 const activityTypes = [
@@ -29,6 +24,26 @@ const activityTypes = [
   { name: "운동", color: "#E91E63" }, // 분홍색으로 변경
   { name: "외출", color: "#03A9F4" }, // 밝은 파란색으로 변경
 ]
+
+/**
+ * 날짜에 대한 CSS 클래스를 계산합니다.
+ */
+function getDateClasses(day: Date, currentDate: Date, isToday: boolean, activityIntensityClass: string) {
+  const isCurrentMonth = isSameMonth(day, currentDate)
+
+  return {
+    cell: `min-h-[60px] cursor-pointer rounded-md border p-1 transition-colors md:min-h-[100px] md:p-2
+      ${isCurrentMonth ? activityIntensityClass : "opacity-40 bg-gray-50"}
+      ${isToday ? "border-primary border-2" : ""}
+      hover:border-primary`,
+    date: `
+      text-xs md:text-sm
+      ${day.getDay() === 0 ? "text-red-500" : ""}
+      ${day.getDay() === 6 ? "text-blue-500" : ""}
+      ${isToday ? "font-bold text-primary" : ""}
+    `,
+  }
+}
 
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
