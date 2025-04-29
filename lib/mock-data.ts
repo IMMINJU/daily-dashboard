@@ -34,6 +34,17 @@ let customData = {
       { name: "코딩", start: 23, end: 4 },
     ],
   },
+  "2025-04-28": {
+    hourlyActivity: [
+      { name: "수면", start: 4, end: 8 },
+      { name: "외출", start: 8, end: 12 },
+      { name: "여가", start: 12, end: 15 },
+      { name: "외출", start: 15, end: 16 },
+      { name: "여가", start: 16, end: 18 },
+      { name: "외출", start: 18, end: 19 },
+      { name: "여가", start: 19, end: 1 },
+    ],
+  },
 }
 
 // 활동 시간 정규화
@@ -80,35 +91,33 @@ const monthData = dates.map((date) => {
   }
 })
 
-// 주간 데이터 생성 (단일 날짜이므로 간소화)
+// 주간 데이터 생성 - 모든 날짜를 포함하도록 수정
 const weeklyData = [
   {
     startDate: monthData[0].date,
-    endDate: monthData[0].date,
-    avgSleepHours: monthData[0].stats.sleepHours,
-    avgOutdoorMinutes: monthData[0].stats.outdoorMinutes,
-    dailyData: [
-      {
-        day: ["일", "월", "화", "수", "목", "금", "토"][monthData[0].dayOfWeek],
-        date: monthData[0].date,
-        sleep: monthData[0].stats.sleepHours,
-        activity: monthData[0].stats.outdoorMinutes,
-      },
-    ],
+    endDate: monthData[monthData.length - 1].date,
+    avgSleepHours: monthData.reduce((sum, day) => sum + day.stats.sleepHours, 0) / monthData.length,
+    avgOutdoorMinutes: monthData.reduce((sum, day) => sum + day.stats.outdoorMinutes, 0) / monthData.length,
+    dailyData: monthData.map((day) => ({
+      day: ["일", "월", "화", "수", "목", "금", "토"][day.dayOfWeek],
+      date: day.date,
+      sleep: day.stats.sleepHours,
+      activity: day.stats.outdoorMinutes,
+    })),
   },
 ]
 
-// 월간 요약 데이터 (단일 날짜이므로 간소화)
+// 월간 요약 데이터 - 모든 날짜 기반으로 계산
 const monthlySummary = {
-  totalDays: 1,
-  avgSleepHours: monthData[0].stats.sleepHours,
-  avgOutdoorMinutes: monthData[0].stats.outdoorMinutes,
+  totalDays: monthData.length,
+  avgSleepHours: monthData.reduce((sum, day) => sum + day.stats.sleepHours, 0) / monthData.length,
+  avgOutdoorMinutes: monthData.reduce((sum, day) => sum + day.stats.outdoorMinutes, 0) / monthData.length,
 }
 
-// 현재 날짜의 데이터 (단일 날짜이므로 첫 번째 항목 사용)
-const todayData = monthData[0]
+// 현재 날짜의 데이터 (가장 최근 날짜 사용)
+const todayData = monthData[monthData.length - 1]
 
-// 주간 비교 데이터 (단일 날짜이므로 간소화)
+// 주간 비교 데이터
 const weeklyComparison = weeklyData[0].dailyData
 
 export const mockData = {
