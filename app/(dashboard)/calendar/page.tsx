@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { useMobile } from "@/hooks/use-mobile"
+import { useScreenSize } from "@/hooks/use-mobile"
 import { useCalendarEvents } from "@/hooks/useCalendarEvents"
 import { useActivityFilters } from "@/hooks/useActivityFilters"
 import { generateCalendarDays, getActivityIntensityClass, isToday, formatMonthTitle } from "@/lib/utils/calendar-utils"
@@ -42,7 +42,7 @@ function getDateClasses(day: Date, currentDate: Date, isToday: boolean, activity
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-  const isMobile = useMobile()
+  const { isMobile, maxVisibleEvents } = useScreenSize()
 
   // 활동 필터 훅 사용
   const { activityFilters, showFilters, setShowFilters, toggleActivityFilter, resetFilters } =
@@ -188,7 +188,7 @@ export default function CalendarPage() {
                       )}
                     </div>
 
-                    {/* 이벤트 표시 - 모바일에서는 최대 1개, 태블릿에서는 최대 3개, 데스크탑에서는 최대 5개 표시 */}
+                    {/* 이벤트 표시 - 화면 크기에 따라 표시할 이벤트 수 조정 */}
                     <div className="mt-1 space-y-1 lg:mt-2 lg:space-y-2">
                       {dayEvents
                         .filter(
@@ -199,7 +199,7 @@ export default function CalendarPage() {
                             event.type !== "수면" &&
                             event.type !== "여가",
                         )
-                        .slice(0, isMobile ? 1 : window.innerWidth >= 1280 ? 5 : 3)
+                        .slice(0, maxVisibleEvents)
                         .map((event, index) => (
                           <div
                             key={index}
@@ -211,12 +211,12 @@ export default function CalendarPage() {
                         ))}
                       {isMobile &&
                         dayEvents.filter((event) => !event.hidden && event.type !== "수면" && event.type !== "여가")
-                          .length > 1 && (
+                          .length > maxVisibleEvents && (
                           <div className="text-center text-[8px] text-muted-foreground lg:text-xs">
                             +
                             {dayEvents.filter(
                               (event) => !event.hidden && event.type !== "수면" && event.type !== "여가",
-                            ).length - 1}
+                            ).length - maxVisibleEvents}
                             개
                           </div>
                         )}
