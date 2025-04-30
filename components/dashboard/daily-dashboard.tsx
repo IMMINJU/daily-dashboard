@@ -40,11 +40,11 @@ export function DailyDashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 xl:space-y-8">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">일일 활동 대시보드</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight xl:text-4xl">일일 활동 대시보드</h1>
+          <p className="text-muted-foreground xl:text-lg">
             {date ? format(date, "yyyy년 MM월 dd일 (EEEE)", { locale: ko }) : "하루 패턴을 한눈에 파악하세요"}
           </p>
         </div>
@@ -53,10 +53,10 @@ export function DailyDashboard() {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className={cn("justify-start text-left font-normal", !date && "text-muted-foreground")}
+                className={cn("justify-start text-left font-normal xl:text-base", !date && "text-muted-foreground")}
                 aria-label="날짜 선택"
               >
-                <CalendarIcon className="mr-2 h-4 w-4" />
+                <CalendarIcon className="mr-2 h-4 w-4 xl:h-5 xl:w-5" />
                 {date ? format(date, "PPP", { locale: ko }) : <span>날짜 선택</span>}
               </Button>
             </PopoverTrigger>
@@ -82,7 +82,7 @@ export function DailyDashboard() {
       </div>
 
       {/* 핵심 메트릭 카드 */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {/* 수면 시간 */}
         <MetricCard
           title="수면 시간"
@@ -106,29 +106,67 @@ export function DailyDashboard() {
           calculateChange={calculateChange}
           unit="분"
         />
+
+        {/* 추가 메트릭 카드 - 데스크탑에서만 표시 */}
+        <MetricCard
+          title="생산적 활동"
+          value={`${calculateProductiveHours(selectedData.activityTypes)}시간`}
+          progressValue={(calculateProductiveHours(selectedData.activityTypes) / 8) * 100}
+          progressColor="#4CAF50"
+          previousValue={previousDayData ? calculateProductiveHours(previousDayData.activityTypes) : undefined}
+          currentValue={calculateProductiveHours(selectedData.activityTypes)}
+          calculateChange={calculateChange}
+          unit="시간"
+        />
+
+        <MetricCard
+          title="여가 활동"
+          value={`${calculateLeisureHours(selectedData.activityTypes)}시간`}
+          progressValue={(calculateLeisureHours(selectedData.activityTypes) / 6) * 100}
+          progressColor="#a4de6c"
+          previousValue={previousDayData ? calculateLeisureHours(previousDayData.activityTypes) : undefined}
+          currentValue={calculateLeisureHours(selectedData.activityTypes)}
+          calculateChange={calculateChange}
+          unit="시간"
+        />
       </div>
 
-      {/* 일일 활동 요약 */}
-      <Card>
-        <CardHeader>
-          <CardTitle>일일 활동 요약</CardTitle>
-          <CardDescription>활동 유형별 시간 분배</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ActivityTypeChart data={selectedData.activityTypes} />
-        </CardContent>
-      </Card>
+      {/* 차트 섹션 - 데스크탑에서 2열 그리드로 표시 */}
+      <div className="grid gap-6 xl:grid-cols-2">
+        {/* 일일 활동 요약 */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="xl:text-xl">일일 활동 요약</CardTitle>
+            <CardDescription className="xl:text-base">활동 유형별 시간 분배</CardDescription>
+          </CardHeader>
+          <CardContent className="xl:h-[450px] xl:h-[500px]">
+            <ActivityTypeChart data={selectedData.activityTypes} />
+          </CardContent>
+        </Card>
 
-      {/* 주간 활동 패턴 */}
-      <Card>
-        <CardHeader>
-          <CardTitle>주간 활동 패턴</CardTitle>
-          <CardDescription>이번 주 전체 활동 패턴</CardDescription>
-        </CardHeader>
-        <CardContent className="h-[400px]">
-          <WeeklyActivityChart data={weeklyActivityData} />
-        </CardContent>
-      </Card>
+        {/* 주간 활동 패턴 */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="xl:text-xl">주간 활동 패턴</CardTitle>
+            <CardDescription className="xl:text-base">이번 주 전체 활동 패턴</CardDescription>
+          </CardHeader>
+          <CardContent className="xl:h-[450px] xl:h-[500px]">
+            <WeeklyActivityChart data={weeklyActivityData} />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
+}
+
+// 생산적 활동 시간 계산 (일, 코딩, 네트워킹)
+function calculateProductiveHours(activityTypes) {
+  return activityTypes
+    .filter((type) => ["일", "코딩", "네트워킹"].includes(type.name))
+    .reduce((sum, type) => sum + (type.value || 0), 0)
+}
+
+// 여가 활동 시간 계산
+function calculateLeisureHours(activityTypes) {
+  return activityTypes.filter((type) => type.name === "여가").reduce((sum, type) => sum + (type.value || 0), 0)
 }

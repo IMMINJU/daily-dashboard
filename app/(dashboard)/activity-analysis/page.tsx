@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { MainLayout } from "@/components/layout/main-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ActivitySelector } from "@/components/activity-analysis/activity-selector"
 import { ActivityStats } from "@/components/activity-analysis/activity-stats"
@@ -25,80 +24,76 @@ export default function ActivityAnalysisPage() {
   // 데이터가 없는 경우만 처리
   if (!activityData) {
     return (
-      <MainLayout>
-        <div className="flex items-center justify-center h-full min-h-[400px]">
-          <p>데이터를 불러올 수 없습니다.</p>
-        </div>
-      </MainLayout>
+      <div className="flex items-center justify-center h-full min-h-[400px]">
+        <p>데이터를 불러올 수 없습니다.</p>
+      </div>
     )
   }
 
   return (
-    <MainLayout>
-      <div className="space-y-6">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">활동별 상세 분석</h1>
-            <p className="text-muted-foreground">각 활동 유형에 대한 상세 분석 및 통계</p>
-          </div>
-          <ActivitySelector
-            activities={activityTypes}
-            selectedActivity={selectedActivity}
-            onSelectActivity={setSelectedActivity}
-          />
+    <div className="space-y-6">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">활동별 상세 분석</h1>
+          <p className="text-muted-foreground">각 활동 유형에 대한 상세 분석 및 통계</p>
         </div>
-
-        <ActivityStats activity={selectedActivity} data={activityData} />
-
-        <Tabs
-          defaultValue="daily"
-          className="w-full"
-          onValueChange={(value) => setTimeFrame(value as "daily" | "weekly")}
-        >
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">활동 추세</h2>
-            <TabsList>
-              <TabsTrigger value="daily">일별</TabsTrigger>
-              <TabsTrigger value="weekly">주별</TabsTrigger>
-            </TabsList>
-          </div>
-          <TabsContent value="daily">
-            <Card>
-              <CardHeader>
-                <CardTitle>일별 {selectedActivity.name} 시간 추세</CardTitle>
-                <CardDescription>최근 30일간의 {selectedActivity.name} 시간 변화</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <TrendChart data={activityData.dailyData} activity={selectedActivity} timeFrame="daily" />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="weekly">
-            <Card>
-              <CardHeader>
-                <CardTitle>주별 {selectedActivity.name} 시간 추세</CardTitle>
-                <CardDescription>주간 평균 {selectedActivity.name} 시간 변화</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <TrendChart data={activityData.weeklyData} activity={selectedActivity} timeFrame="weekly" />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>{selectedActivity.name} 시간대별 분포</CardTitle>
-            <CardDescription>하루 중 {selectedActivity.name} 활동이 많은 시간대</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <TimeDistributionChart data={activityData.timeDistribution} activity={selectedActivity} />
-          </CardContent>
-        </Card>
-
-        <WeekdayVsWeekendComparison activityData={activityData} selectedActivity={selectedActivity} />
+        <ActivitySelector
+          activities={activityTypes}
+          selectedActivity={selectedActivity}
+          onSelectActivity={setSelectedActivity}
+        />
       </div>
-    </MainLayout>
+
+      <ActivityStats activity={selectedActivity} data={activityData} />
+
+      <Tabs
+        defaultValue="daily"
+        className="w-full"
+        onValueChange={(value) => setTimeFrame(value as "daily" | "weekly")}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">활동 추세</h2>
+          <TabsList>
+            <TabsTrigger value="daily">일별</TabsTrigger>
+            <TabsTrigger value="weekly">주별</TabsTrigger>
+          </TabsList>
+        </div>
+        <TabsContent value="daily">
+          <Card>
+            <CardHeader>
+              <CardTitle>일별 {selectedActivity.name} 시간 추세</CardTitle>
+              <CardDescription>최근 30일간의 {selectedActivity.name} 시간 변화</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TrendChart data={activityData.dailyData} activity={selectedActivity} timeFrame="daily" />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="weekly">
+          <Card>
+            <CardHeader>
+              <CardTitle>주별 {selectedActivity.name} 시간 추세</CardTitle>
+              <CardDescription>주간 평균 {selectedActivity.name} 시간 변화</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TrendChart data={activityData.weeklyData} activity={selectedActivity} timeFrame="weekly" />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{selectedActivity.name} 시간대별 분포</CardTitle>
+          <CardDescription>하루 중 {selectedActivity.name} 활동이 많은 시간대</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TimeDistributionChart data={activityData.timeDistribution} activity={selectedActivity} />
+        </CardContent>
+      </Card>
+
+      <WeekdayVsWeekendComparison activityData={activityData} selectedActivity={selectedActivity} />
+    </div>
   )
 }
 

@@ -1,12 +1,14 @@
-import type { ReactNode } from "react"
+"use client"
 
-import { Sidebar } from "./sidebar"
+import type React from "react"
 
-interface MainLayoutProps {
-  children: ReactNode
-}
+import { Sidebar } from "@/components/layout/sidebar"
 
-export function MainLayout({ children }: MainLayoutProps) {
+export default function DashboardLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
     <div className="flex min-h-screen">
       <Sidebar />

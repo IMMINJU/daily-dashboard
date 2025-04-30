@@ -37,44 +37,46 @@ export function WeeklyActivityChart({ data }: WeeklyActivityChartProps) {
     }, 0)
 
     return (
-      <div className="rounded-lg border bg-background p-2 shadow-sm">
-        <div className="mb-2 font-medium flex items-center justify-between">
+      <div className="rounded-lg border bg-background p-2 shadow-sm xl:p-4">
+        <div className="mb-2 font-medium flex items-center justify-between xl:text-lg">
           <span>{label}요일</span>
           {dayData?.isToday && (
-            <span className="ml-2 text-xs px-1.5 py-0.5 bg-primary text-primary-foreground rounded-full">오늘</span>
+            <span className="ml-2 text-xs px-1.5 py-0.5 bg-primary text-primary-foreground rounded-full xl:text-sm xl:px-2 xl:py-1">
+              오늘
+            </span>
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 xl:gap-3">
           {payload.map((entry, index) => {
             // 값이 0인 항목은 표시하지 않음
             if (entry.value === 0) return null
 
             return (
               <React.Fragment key={index}>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <div className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                <div className="flex items-center gap-1 text-sm text-muted-foreground xl:text-base">
+                  <div className="h-2 w-2 rounded-full xl:h-3 xl:w-3" style={{ backgroundColor: entry.color }} />
                   {entry.name}:
                 </div>
-                <div className="text-right text-sm font-medium">{entry.value}시간</div>
+                <div className="text-right text-sm font-medium xl:text-base">{entry.value}시간</div>
               </React.Fragment>
             )
           })}
 
           {/* 구분선 */}
-          <div className="col-span-2 my-1 border-t border-border"></div>
+          <div className="col-span-2 my-1 border-t border-border xl:my-2"></div>
 
           {/* 요약 정보 */}
-          <div className="text-sm text-muted-foreground">생산적 활동:</div>
-          <div className="text-right text-sm font-medium">{productiveHours}시간</div>
+          <div className="text-sm text-muted-foreground xl:text-base">생산적 활동:</div>
+          <div className="text-right text-sm font-medium xl:text-base">{productiveHours}시간</div>
 
-          <div className="text-sm text-muted-foreground">총 활동 시간:</div>
-          <div className="text-right text-sm font-medium">{totalActivityHours}시간</div>
+          <div className="text-sm text-muted-foreground xl:text-base">총 활동 시간:</div>
+          <div className="text-right text-sm font-medium xl:text-base">{totalActivityHours}시간</div>
 
           {dayData && (
             <>
-              <div className="text-sm text-muted-foreground">날짜:</div>
-              <div className="text-right text-sm font-medium">
+              <div className="text-sm text-muted-foreground xl:text-base">날짜:</div>
+              <div className="text-right text-sm font-medium xl:text-base">
                 {new Date(dayData.date).toLocaleDateString("ko-KR", {
                   month: "short",
                   day: "numeric",
@@ -88,17 +90,18 @@ export function WeeklyActivityChart({ data }: WeeklyActivityChartProps) {
   }
 
   return (
-    <ResponsiveContainer width="100%" height={350}>
+    <ResponsiveContainer width="100%" height="100%">
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
-        <XAxis dataKey="day" tick={{ fontSize: 12 }} aria-label="요일" />
+        <XAxis dataKey="day" tick={{ fontSize: 12 }} aria-label="요일" className="xl:text-base" />
         <YAxis
           label={{ value: "시간", angle: -90, position: "insideLeft" }}
           tick={{ fontSize: 12 }}
           aria-label="시간"
+          className="xl:text-base"
         />
         <Tooltip content={<CustomTooltip />} />
-        <Legend />
+        <Legend className="xl:text-base" />
         {activityTypes.map((type) => (
           <Line
             key={type.name}
