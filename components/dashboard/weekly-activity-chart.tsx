@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react"
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts"
+import { ACTIVITY_TYPES } from "@/constants/activity-types"
 
 interface WeeklyActivityChartProps {
   data: any[]
@@ -9,18 +10,7 @@ interface WeeklyActivityChartProps {
 
 export function WeeklyActivityChart({ data }: WeeklyActivityChartProps) {
   // 활동 유형 및 색상 정의
-  const activityTypes = useMemo(
-    () => [
-      { name: "수면", color: "#8884d8" },
-      { name: "일", color: "#4CAF50" },
-      { name: "여가", color: "#a4de6c" },
-      { name: "코딩", color: "#ffc658" },
-      { name: "네트워킹", color: "#ff8042" },
-      { name: "운동", color: "#E91E63" },
-      { name: "외출", color: "#03A9F4" },
-    ],
-    [],
-  )
+  const activityTypes = useMemo(() => ACTIVITY_TYPES, [])
 
   // 커스텀 툴팁 컴포넌트
   const CustomTooltip = ({ active, payload, label }) => {

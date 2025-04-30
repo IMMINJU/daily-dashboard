@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useMemo } from "react"
 import { format } from "date-fns"
 import { mockData } from "@/lib/mock-data"
 import type { DayData } from "@/types"
@@ -14,7 +14,6 @@ export function useDashboardData(date: Date | undefined) {
   const [selectedData, setSelectedData] = useState<DayData | null>(null)
   const [previousDayData, setPreviousDayData] = useState<DayData | null>(null)
   const [weeklyActivityData, setWeeklyActivityData] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   // 캘린더에 표시할 날짜 범위 계산
   const availableDates = useMemo(() => {
@@ -26,10 +25,9 @@ export function useDashboardData(date: Date | undefined) {
   const toDate = useMemo(() => availableDates[availableDates.length - 1], [availableDates])
 
   // 날짜 변경 시 데이터 업데이트
-  useEffect(() => {
+  useMemo(() => {
     if (!date) return
 
-    setIsLoading(true)
     const dateString = format(date, "yyyy-MM-dd")
     const selectedDayData = mockData.monthData.find((day) => day.date === dateString)
 
@@ -51,7 +49,7 @@ export function useDashboardData(date: Date | undefined) {
         )
 
         // 활동 유형 목록
-        const activityTypes = ["수면", "일", "여가", "코딩", "네트워킹", "운동", "외출"]
+        const activityTypes = ["수면", "일", "여가", "코딩", "네트워킹", "외출"]
 
         // 각 날짜별 활동 데이터 추출
         daysInWeek.forEach((day) => {
@@ -74,8 +72,6 @@ export function useDashboardData(date: Date | undefined) {
       setPreviousDayData(prevDayData)
       setWeeklyActivityData(weeklyActivityData)
     }
-
-    setIsLoading(false)
   }, [date])
 
   // 메트릭 변화율 계산 함수
@@ -94,7 +90,6 @@ export function useDashboardData(date: Date | undefined) {
     selectedData,
     previousDayData,
     weeklyActivityData,
-    isLoading,
     fromDate,
     toDate,
     calculateChange,

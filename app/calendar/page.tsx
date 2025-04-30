@@ -15,15 +15,10 @@ import { useMobile } from "@/hooks/use-mobile"
 import { useCalendarEvents } from "@/hooks/useCalendarEvents"
 import { useActivityFilters } from "@/hooks/useActivityFilters"
 import { generateCalendarDays, getActivityIntensityClass, isToday, formatMonthTitle } from "@/lib/utils/calendar-utils"
+import { CALENDAR_ACTIVITY_TYPES } from "@/constants/activity-types"
 
 // 모든 활동 유형 목록 (수면과 여가 제외)
-const activityTypes = [
-  { name: "일", color: "#4CAF50" }, // 초록색으로 변경
-  { name: "코딩", color: "#ffc658" },
-  { name: "네트워킹", color: "#ff8042" },
-  { name: "운동", color: "#E91E63" }, // 분홍색으로 변경
-  { name: "외출", color: "#03A9F4" }, // 밝은 파란색으로 변경
-]
+const activityTypes = CALENDAR_ACTIVITY_TYPES
 
 /**
  * 날짜에 대한 CSS 클래스를 계산합니다.

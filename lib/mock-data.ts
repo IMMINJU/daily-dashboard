@@ -6,6 +6,7 @@ import {
   createActivityTypes,
   normalizeHourlyActivities,
 } from "@/lib/utils/activity-utils"
+import { ACTIVITY_TYPES } from "@/constants/activity-types"
 
 // 현재 날짜 기준
 const today = new Date()
@@ -13,17 +14,9 @@ const currentMonth = today.getMonth()
 const currentYear = today.getFullYear()
 
 // 공통으로 사용할 activityTypes 구조 정의 (이름과 색상만)
-const activityTypeTemplate = [
-  { name: "수면", color: "#8884d8" },
-  { name: "일", color: "#4CAF50" }, // 초록색으로 변경
-  { name: "여가", color: "#a4de6c" },
-  { name: "코딩", color: "#ffc658" },
-  { name: "네트워킹", color: "#ff8042" },
-  { name: "운동", color: "#E91E63" }, // 분홍색으로 변경
-  { name: "외출", color: "#03A9F4" }, // 밝은 파란색으로 변경
-]
+const activityTypeTemplate = ACTIVITY_TYPES
 
-// 모든 날짜에 대한 필수 커스텀 데이터 (4월 27일만 남김)
+// 모든 날짜에 대한 필수 커스텀 데이터
 let customData = {
   "2025-04-27": {
     hourlyActivity: [
@@ -43,6 +36,17 @@ let customData = {
       { name: "여가", start: 16, end: 18 },
       { name: "외출", start: 18, end: 19 },
       { name: "여가", start: 19, end: 1 },
+    ],
+  },
+  "2025-04-29": {
+    hourlyActivity: [
+      { name: "수면", start: 1, end: 8 },
+      { name: "외출", start: 8, end: 12 },
+      { name: "여가", start: 12, end: 15 },
+      { name: "코딩", start: 15, end: 16 },
+      { name: "여가", start: 16, end: 21 },
+      { name: "네트워킹", start: 21, end: 22 },
+      { name: "여가", start: 22, end: 1 },
     ],
   },
 }

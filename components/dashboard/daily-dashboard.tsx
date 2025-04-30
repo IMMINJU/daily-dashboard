@@ -13,9 +13,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ActivityTypeChart } from "./activity-type-chart"
 import { WeeklyActivityChart } from "./weekly-activity-chart"
 import { useDashboardData } from "@/hooks/useDashboardData"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { MetricCard } from "./metric-card"
 import { mockData } from "@/lib/mock-data"
+import { ACTIVITY_CONSTANTS } from "@/constants/activity-types"
 
 export function DailyDashboard() {
   // mock 데이터에서 가장 최신 날짜 가져오기
@@ -27,21 +27,14 @@ export function DailyDashboard() {
 
   const [date, setDate] = useState<Date | undefined>(latestDate)
 
-  const {
-    selectedData,
-    previousDayData,
-    weeklyActivityData,
-    isLoading,
-    fromDate,
-    toDate,
-    calculateChange,
-    hasDataForDate,
-  } = useDashboardData(date)
+  const { selectedData, previousDayData, weeklyActivityData, fromDate, toDate, calculateChange, hasDataForDate } =
+    useDashboardData(date)
 
-  if (isLoading || !selectedData) {
+  // 데이터가 없는 경우만 처리
+  if (!selectedData) {
     return (
       <div className="flex items-center justify-center h-full min-h-[400px]">
-        <LoadingSpinner />
+        <p>선택한 날짜에 데이터가 없습니다.</p>
       </div>
     )
   }
@@ -94,7 +87,7 @@ export function DailyDashboard() {
         <MetricCard
           title="수면 시간"
           value={`${selectedData.stats.sleepHours}시간`}
-          progressValue={(selectedData.stats.sleepHours / 8) * 100}
+          progressValue={(selectedData.stats.sleepHours / ACTIVITY_CONSTANTS.OPTIMAL_SLEEP_HOURS) * 100}
           progressColor="#8884d8"
           previousValue={previousDayData?.stats.sleepHours}
           currentValue={selectedData.stats.sleepHours}
@@ -106,7 +99,7 @@ export function DailyDashboard() {
         <MetricCard
           title="외출 시간"
           value={`${selectedData.stats.outdoorMinutes}분`}
-          progressValue={(selectedData.stats.outdoorMinutes / 120) * 100}
+          progressValue={(selectedData.stats.outdoorMinutes / ACTIVITY_CONSTANTS.OPTIMAL_OUTDOOR_MINUTES) * 100}
           progressColor="#03A9F4"
           previousValue={previousDayData?.stats.outdoorMinutes}
           currentValue={selectedData.stats.outdoorMinutes}

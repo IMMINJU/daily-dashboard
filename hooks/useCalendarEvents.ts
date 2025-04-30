@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useMemo } from "react"
 import { format, parseISO, isSameMonth } from "date-fns"
 import { mockData } from "@/lib/mock-data"
+import { getActivityColor } from "@/constants/activity-types"
 
 export interface CalendarEvent {
   date: string
@@ -21,12 +22,9 @@ export interface CalendarEvent {
  * 캘린더 이벤트 데이터를 관리하는 커스텀 훅
  */
 export function useCalendarEvents(currentDate: Date, activityFilters: string[] = []) {
-  const [events, setEvents] = useState<CalendarEvent[]>([])
-
-  // 이벤트 데이터 생성
-  useEffect(() => {
-    const newEvents = generateEvents(currentDate)
-    setEvents(newEvents)
+  // 이벤트 데이터 생성을 useMemo로 변경
+  const events = useMemo(() => {
+    return generateEvents(currentDate)
   }, [currentDate])
 
   // 특정 날짜의 이벤트 가져오기
@@ -51,18 +49,10 @@ export function useCalendarEvents(currentDate: Date, activityFilters: string[] =
     return mockData.monthData.find((day) => day.date === dateString)
   }
 
-  // 특정 날짜의 시간별 활동 가져오기
-  const getHourlyActivitiesForDate = (date: Date) => {
-    const dateString = format(date, "yyyy-MM-dd")
-    const dayData = mockData.monthData.find((day) => day.date === dateString)
-    return dayData ? dayData.hourlyActivity : []
-  }
-
   return {
     events,
     getEventsForDate,
     getDayData,
-    getHourlyActivitiesForDate,
   }
 }
 
@@ -110,7 +100,7 @@ function generateEvents(currentDate: Date): CalendarEvent[] {
             date: day.date,
             title: activity.name,
             type: activity.name,
-            color: activity.color,
+            color: getActivityColor(activity.name),
             hours: activity.value,
           })
 

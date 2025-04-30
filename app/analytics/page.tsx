@@ -21,10 +21,14 @@ import {
 import { format, parseISO, isWeekend } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Activity, BarChart2, PieChartIcon, Clock } from "lucide-react"
+import { ACTIVITY_TYPES } from "@/constants/activity-types"
 
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState("all")
   const [activeTab, setActiveTab] = useState("overview")
+
+  // 활동 유형 및 색상 정의 - 순서 일관성을 위해 명시적으로 정의
+  const activityTypes = ACTIVITY_TYPES
 
   // 필터링된 데이터 계산
   const filteredData = useMemo(() => {
@@ -52,12 +56,13 @@ export default function AnalyticsPage() {
       })
     })
 
-    return Object.keys(totals).map((name) => ({
-      name,
-      value: Math.round(totals[name].total / totals[name].count),
-      color: totals[name].color,
+    // 활동 유형 순서를 일관되게 유지
+    return activityTypes.map((type) => ({
+      name: type.name,
+      value: Math.round((totals[type.name]?.total || 0) / (totals[type.name]?.count || 1)),
+      color: type.color,
     }))
-  }, [filteredData])
+  }, [filteredData, activityTypes])
 
   // 요일별 활동 패턴
   const dayOfWeekPatterns = useMemo(() => {
@@ -97,24 +102,23 @@ export default function AnalyticsPage() {
     // 차트 데이터 형식으로 변환
     return Object.values(dayPatterns).map((day) => {
       const result = { name: day.name }
-      Object.keys(day.activities).forEach((activity) => {
-        result[activity] = day.activities[activity].average
+      activityTypes.forEach((type) => {
+        result[type.name] = day.activities[type.name]?.average || 0
       })
       return result
     })
-  }, [filteredData])
+  }, [filteredData, activityTypes])
 
   // 시간대별 활동 분포 (히트맵 데이터)
   const hourlyDistribution = useMemo(() => {
     const hours = Array.from({ length: 24 }, (_, i) => i)
-    const activityTypes = ["수면", "일", "여가", "코딩", "네트워킹", "운동", "외출"]
     const distribution = {}
 
     // 초기화
     hours.forEach((hour) => {
       distribution[hour] = {}
       activityTypes.forEach((type) => {
-        distribution[hour][type] = 0
+        distribution[hour][type.name] = 0
       })
     })
 
@@ -147,7 +151,7 @@ export default function AnalyticsPage() {
     const totalDays = filteredData.length
     hours.forEach((hour) => {
       activityTypes.forEach((type) => {
-        distribution[hour][type] = Math.round((distribution[hour][type] / totalDays) * 100)
+        distribution[hour][type.name] = Math.round((distribution[hour][type.name] / totalDays) * 100)
       })
     })
 
@@ -155,11 +159,11 @@ export default function AnalyticsPage() {
     return hours.map((hour) => {
       const result = { hour: `${hour}:00` }
       activityTypes.forEach((type) => {
-        result[type] = distribution[hour][type]
+        result[type.name] = distribution[hour][type.name]
       })
       return result
     })
-  }, [filteredData])
+  }, [filteredData, activityTypes])
 
   // 평일 vs 주말 비교 데이터
   const weekdayVsWeekend = useMemo(() => {
@@ -184,9 +188,11 @@ export default function AnalyticsPage() {
     // 평균 계산
     const calculateAverages = (data) => {
       const result = {}
-      Object.keys(data).forEach((key) => {
-        if (key !== "count" && data.count > 0) {
-          result[key] = Math.round((data[key].total / data.count) * 10) / 10 // 소수점 한 자리로 반올림
+      activityTypes.forEach((type) => {
+        if (data[type.name] && data.count > 0) {
+          result[type.name] = Math.round((data[type.name].total / data.count) * 10) / 10 // 소수점 한 자리로 반올림
+        } else {
+          result[type.name] = 0
         }
       })
       return result
@@ -196,14 +202,15 @@ export default function AnalyticsPage() {
     const weekendAverages = calculateAverages(weekendData)
 
     // 차트 데이터 형식으로 변환
-    return Object.keys({ ...weekdayAverages, ...weekendAverages }).map((activity) => {
+    return activityTypes.map((type) => {
       return {
-        name: activity,
-        평일: weekdayAverages[activity] || 0,
-        주말: weekendAverages[activity] || 0,
+        name: type.name,
+        평일: weekdayAverages[type.name] || 0,
+        주말: weekendAverages[type.name] || 0,
+        color: type.color,
       }
     })
-  }, [filteredData])
+  }, [filteredData, activityTypes])
 
   return (
     <MainLayout>
@@ -370,13 +377,9 @@ export default function AnalyticsPage() {
                       }}
                     />
                     <Legend />
-                    <Bar dataKey="수면" stackId="a" fill="#8884d8" />
-                    <Bar dataKey="일" stackId="a" fill="#4CAF50" />
-                    <Bar dataKey="여가" stackId="a" fill="#a4de6c" />
-                    <Bar dataKey="코딩" stackId="a" fill="#ffc658" />
-                    <Bar dataKey="네트워킹" stackId="a" fill="#ff8042" />
-                    <Bar dataKey="운동" stackId="a" fill="#E91E63" />
-                    <Bar dataKey="외출" stackId="a" fill="#03A9F4" />
+                    {activityTypes.map((type) => (
+                      <Bar key={type.name} dataKey={type.name} stackId="a" fill={type.color} />
+                    ))}
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -425,13 +428,9 @@ export default function AnalyticsPage() {
                       }}
                     />
                     <Legend />
-                    <Bar dataKey="수면" fill="#8884d8" />
-                    <Bar dataKey="일" fill="#4CAF50" />
-                    <Bar dataKey="여가" fill="#a4de6c" />
-                    <Bar dataKey="코딩" fill="#ffc658" />
-                    <Bar dataKey="네트워킹" fill="#ff8042" />
-                    <Bar dataKey="운동" fill="#E91E63" />
-                    <Bar dataKey="외출" fill="#03A9F4" />
+                    {activityTypes.map((type) => (
+                      <Bar key={type.name} dataKey={type.name} fill={type.color} />
+                    ))}
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>

@@ -10,41 +10,24 @@ import { TrendChart } from "@/components/activity-analysis/trend-chart"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line } from "recharts"
 import { useActivityData } from "@/hooks/useActivityData"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import type { ActivityType } from "@/types"
+import { ACTIVITY_TYPES } from "@/constants/activity-types"
 
 // 활동 유형 정의
-const activityTypes: ActivityType[] = [
-  { name: "수면", color: "#8884d8" },
-  { name: "일", color: "#4CAF50" },
-  { name: "여가", color: "#a4de6c" },
-  { name: "코딩", color: "#ffc658" },
-  { name: "네트워킹", color: "#ff8042" },
-  { name: "운동", color: "#E91E63" },
-  { name: "외출", color: "#03A9F4" },
-]
+const activityTypes = ACTIVITY_TYPES
 
 export default function ActivityAnalysisPage() {
   const [selectedActivity, setSelectedActivity] = useState<ActivityType>(activityTypes[0])
   const [timeFrame, setTimeFrame] = useState<"daily" | "weekly">("daily")
 
-  const { activityData, isLoading, error } = useActivityData(selectedActivity)
+  const { activityData } = useActivityData(selectedActivity)
 
-  if (isLoading || !activityData) {
+  // 데이터가 없는 경우만 처리
+  if (!activityData) {
     return (
       <MainLayout>
         <div className="flex items-center justify-center h-full min-h-[400px]">
-          <LoadingSpinner />
-        </div>
-      </MainLayout>
-    )
-  }
-
-  if (error) {
-    return (
-      <MainLayout>
-        <div className="flex items-center justify-center h-full">
-          <p className="text-destructive">데이터를 불러오는 중 오류가 발생했습니다.</p>
+          <p>데이터를 불러올 수 없습니다.</p>
         </div>
       </MainLayout>
     )
