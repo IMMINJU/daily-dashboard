@@ -110,10 +110,9 @@ let customData = {
   },
   "2025-05-06": {
     hourlyActivity: [
-      { name: "수면", start: 2, end: 12 },
-      { name: "여가", start: 12, end: 15 },
-      { name: "코딩", start: 15, end: 18 },
-      { name: "여가", start: 18, end: 1 },
+      { name: "수면", start: 2, end: 10 },
+      { name: "코딩", start: 10, end: 15 },
+      { name: "여가", start: 15, end: 1 },
       { name: "수면", start: 1, end: 2 },
     ],
   },
