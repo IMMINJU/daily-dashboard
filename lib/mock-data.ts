@@ -5,16 +5,16 @@ import {
   calculateActivityValues,
   createActivityTypes,
   normalizeHourlyActivities,
-} from "@/lib/utils/activity-utils"
-import { ACTIVITY_TYPES } from "@/constants/activity-types"
+} from "@/lib/utils/activity-utils";
+import { ACTIVITY_TYPES } from "@/constants/activity-types";
 
 // 현재 날짜 기준
-const today = new Date()
-const currentMonth = today.getMonth()
-const currentYear = today.getFullYear()
+const today = new Date();
+const currentMonth = today.getMonth();
+const currentYear = today.getFullYear();
 
 // 공통으로 사용할 activityTypes 구조 정의 (이름과 색상만)
-const activityTypeTemplate = ACTIVITY_TYPES
+const activityTypeTemplate = ACTIVITY_TYPES;
 
 // 모든 날짜에 대한 필수 커스텀 데이터
 let customData = {
@@ -116,37 +116,49 @@ let customData = {
       { name: "수면", start: 1, end: 2 },
     ],
   },
-}
+  "2025-05-07": {
+    hourlyActivity: [
+      { name: "수면", start: 2, end: 9 },
+      { name: "외출", start: 9, end: 12 },
+      { name: "여가", start: 12, end: 15 },
+      { name: "외출", start: 15, end: 16 },
+      { name: "여가", start: 16, end: 2 },
+    ],
+  },
+};
 
 // 활동 시간 정규화
-customData = normalizeHourlyActivities(customData)
+customData = normalizeHourlyActivities(customData);
 
 // customData에서 날짜 추출 및 정렬
 const dates = Object.keys(customData).sort((a, b) => {
-  return new Date(a).getTime() - new Date(b).getTime()
-})
+  return new Date(a).getTime() - new Date(b).getTime();
+});
 
 // 날짜 데이터 생성
 const monthData = dates.map((date) => {
-  const { dayOfWeek, isWeekend } = getDayInfo(date)
-  const custom = customData[date]
+  const { dayOfWeek, isWeekend } = getDayInfo(date);
+  const custom = customData[date];
 
   if (!custom) {
-    throw new Error(`날짜 ${date}에 대한 커스텀 데이터가 없습니다.`)
+    throw new Error(`날짜 ${date}에 대한 커스텀 데이터가 없습니다.`);
   }
 
   if (!custom.hourlyActivity) {
-    throw new Error(`날짜 ${date}에 대한 hourlyActivity가 없습니다.`)
+    throw new Error(`날짜 ${date}에 대한 hourlyActivity가 없습니다.`);
   }
 
   // hourlyActivity에서 수면 시간 계산
-  const sleepHours = calculateSleepHours(custom.hourlyActivity)
+  const sleepHours = calculateSleepHours(custom.hourlyActivity);
 
   // hourlyActivity에서 외출 시간 계산
-  const outdoorMinutes = calculateOutdoorMinutes(custom.hourlyActivity)
+  const outdoorMinutes = calculateOutdoorMinutes(custom.hourlyActivity);
 
   // hourlyActivity에서 activityTypesValues 계산
-  const activityTypesValues = calculateActivityValues(custom.hourlyActivity, activityTypeTemplate)
+  const activityTypesValues = calculateActivityValues(
+    custom.hourlyActivity,
+    activityTypeTemplate
+  );
 
   // 데이터 생성
   return {
@@ -158,17 +170,24 @@ const monthData = dates.map((date) => {
       outdoorMinutes,
     },
     hourlyActivity: custom.hourlyActivity,
-    activityTypes: createActivityTypes(activityTypesValues, activityTypeTemplate),
-  }
-})
+    activityTypes: createActivityTypes(
+      activityTypesValues,
+      activityTypeTemplate
+    ),
+  };
+});
 
 // 주간 데이터 생성 - 모든 날짜를 포함하도록 수정
 const weeklyData = [
   {
     startDate: monthData[0].date,
     endDate: monthData[monthData.length - 1].date,
-    avgSleepHours: monthData.reduce((sum, day) => sum + day.stats.sleepHours, 0) / monthData.length,
-    avgOutdoorMinutes: monthData.reduce((sum, day) => sum + day.stats.outdoorMinutes, 0) / monthData.length,
+    avgSleepHours:
+      monthData.reduce((sum, day) => sum + day.stats.sleepHours, 0) /
+      monthData.length,
+    avgOutdoorMinutes:
+      monthData.reduce((sum, day) => sum + day.stats.outdoorMinutes, 0) /
+      monthData.length,
     dailyData: monthData.map((day) => ({
       day: ["일", "월", "화", "수", "목", "금", "토"][day.dayOfWeek],
       date: day.date,
@@ -176,20 +195,24 @@ const weeklyData = [
       activity: day.stats.outdoorMinutes,
     })),
   },
-]
+];
 
 // 월간 요약 데이터 - 모든 날짜 기반으로 계산
 const monthlySummary = {
   totalDays: monthData.length,
-  avgSleepHours: monthData.reduce((sum, day) => sum + day.stats.sleepHours, 0) / monthData.length,
-  avgOutdoorMinutes: monthData.reduce((sum, day) => sum + day.stats.outdoorMinutes, 0) / monthData.length,
-}
+  avgSleepHours:
+    monthData.reduce((sum, day) => sum + day.stats.sleepHours, 0) /
+    monthData.length,
+  avgOutdoorMinutes:
+    monthData.reduce((sum, day) => sum + day.stats.outdoorMinutes, 0) /
+    monthData.length,
+};
 
 // 현재 날짜의 데이터 (가장 최근 날짜 사용)
-const todayData = monthData[monthData.length - 1]
+const todayData = monthData[monthData.length - 1];
 
 // 주간 비교 데이터
-const weeklyComparison = weeklyData[0].dailyData
+const weeklyComparison = weeklyData[0].dailyData;
 
 export const mockData = {
   // 오늘 데이터 (기본 표시용)
@@ -205,4 +228,4 @@ export const mockData = {
 
   // 현재 날짜 정보
   currentDate: todayData.date,
-}
+};
