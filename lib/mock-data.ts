@@ -130,14 +130,21 @@ let customData = {
       { name: "수면", start: 2, end: 11 },
       { name: "여가", start: 11, end: 14 },
       { name: "외출", start: 14, end: 17 },
-      { name: "여가", start: 17, end: 12 },
-      { name: "수면", start: 12, end: 2 },
+      { name: "여가", start: 17, end: 0 },
+      { name: "수면", start: 0, end: 2 },
     ],
   },
   "2025-05-09": {
     hourlyActivity: [
       { name: "수면", start: 2, end: 10 },
       { name: "여가", start: 10, end: 2 },
+    ],
+  },
+  "2025-05-10": {
+    hourlyActivity: [
+      { name: "수면", start: 2, end: 12 },
+      { name: "코딩", start: 12, end: 18 },
+      { name: "여가", start: 18, end: 2 },
     ],
   },
 };
