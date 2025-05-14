@@ -166,6 +166,13 @@ let customData = {
       { name: "수면", start: 0, end: 2 },
     ],
   },
+  "2025-05-13": {
+    hourlyActivity: [
+      { name: "수면", start: 2, end: 10 },
+      { name: "코딩", start: 10, end: 15 },
+      { name: "여가", start: 15, end: 2 },
+    ],
+  },
 };
 
 // 활동 시간 정규화
